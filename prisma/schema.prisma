@@ -1,0 +1,157 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+// -- User ------------------------------------------------------------------------------------------------------
+model User {
+    id                         Int                   @id @default(autoincrement())
+    email                      String                @unique
+    phone                      String?               @unique
+    firstName                  String
+    lastName                   String?
+    middleName                 String?
+    dateOfBirth                DateTime?
+    avatar                     String?
+    company                    String?
+    userType                   Int
+    // Address
+    country                    String?
+    state                      String?
+    city                       String?
+    address                    String?
+    postalCode                 String?
+    about                      String?
+    // Settings
+    invisibleBeforeDate        DateTime              @default(now())
+    canDisturbMeFrom           String?
+    canDisturbMeTo             String?
+    isReducingLastName         Boolean               @default(false)
+    isShowingPatronymic        Boolean               @default(false)
+    // Notifications
+    emailOnPickOrOffer         Boolean               @default(false)
+    notificationOnPickOrOffer  Boolean               @default(false)
+    callsOnPickOrOffer         Boolean               @default(false)
+    emailOnNewOrder            Boolean               @default(false)
+    notificationsOnNewOrder    Boolean               @default(false)
+    newOrdersPeriodicity       Int                   @default(1)
+    emailOnOthers              Boolean               @default(false)
+    smsAndCallsOnOthers        Boolean               @default(false)
+    timeToNotificationsFrom    String?
+    timeToNotificationsTo      String?
+    anyTime                    Boolean               @default(false)
+    // Communications
+    isCustomerAllowedToCall    Boolean               @default(true)
+    isCustomerAllowedToChat    Boolean               @default(true)
+    isCustomerAllowedToSuggest Boolean               @default(true)
+    // Meta
+    role                       Role                  @default(USER)
+    createdAt                  DateTime              @default(now())
+    updatedAt                  DateTime?
+    //
+    password                   Password?
+    session                    Session[]
+    cart                       ProductsInCarts[]
+    favorites                  ProductsInFavorites[]
+    orders                     Order[]
+}
+
+enum Role {
+    USER
+    MANAGER
+    ADMIN
+}
+
+model Password {
+    userId Int    @id
+    hash   String @unique
+    //
+    user   User   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model Session {
+    fingerprint  String    @id
+    userId       Int
+    hostname     String?
+    refreshToken String
+    createdAt    DateTime  @default(now())
+    updatedAt    DateTime?
+    //
+    user         User      @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model EmailData {
+    code  Int
+    token String
+
+    @@id([code, token])
+}
+
+// -- Cart ------------------------------------------------------------------------------------------------------
+model ProductsInCarts {
+    userId     Int
+    productId  Int
+    productQty Int
+    addedAt    DateTime @default(now())
+    //
+    user       User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    product    Product  @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+    @@id([userId, productId])
+}
+
+// -- Favorites -------------------------------------------------------------------------------------------------
+model ProductsInFavorites {
+    userId    Int
+    productId Int
+    addedAt   DateTime @default(now())
+    //
+    user      User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    product   Product  @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+    @@id([userId, productId])
+}
+
+// -- Orders ----------------------------------------------------------------------------------------------------
+model Order {
+    id        Int                @id @default(autoincrement())
+    userId    Int
+    createdAt DateTime           @default(now())
+    products  ProductsInOrders[]
+    //
+    user      User               @relation(fields: [userId], references: [id])
+}
+
+model ProductsInOrders {
+    orderId   Int
+    productId Int
+    //
+    order     Order   @relation(fields: [orderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    product   Product @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+    @@id([orderId, productId])
+}
+
+// -- Product ---------------------------------------------------------------------------------------------------
+model Product {
+    id          Int                   @id @default(autoincrement())
+    title       String
+    price       Int
+    code        String?
+    description String?
+    image       String?
+    images      String[]
+    isVisible   Boolean               @default(false)
+    createdAt   DateTime              @default(now())
+    createdBy   String
+    updatedAt   DateTime?
+    updatedBy   String?
+    //
+    inCart      ProductsInCarts[]
+    inFavorites ProductsInFavorites[]
+    inOrders    ProductsInOrders[]
+}

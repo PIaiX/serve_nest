@@ -1,0 +1,15 @@
+[Unit]
+Description="Nest Template App"
+
+[Service]
+ExecStart=/usr/bin/node dist/main.js
+WorkingDirectory=/var/www/nest-template/
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=NestTemplApp
+Environment=NODE_ENV=production PORT=6001
+
+[Install]
+WantedBy=multi-user.target
