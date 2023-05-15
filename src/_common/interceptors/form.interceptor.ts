@@ -26,7 +26,7 @@ export class FormDataInterceptor implements NestInterceptor {
             if (part.type === 'file') {
                 const uuid = uuidv4()
                 try {
-                    await writeFile(join(this.uploadPath, `${uuid}-${part.filename.split('.').pop()}`), part.file)
+                    await writeFile(join(this.uploadPath, `${uuid}-.${part.filename.split('.').pop()}`), part.file)
                 } catch (e) {
                     throw new InternalServerErrorException()
                 }
@@ -35,14 +35,14 @@ export class FormDataInterceptor implements NestInterceptor {
                     let arr = []
 
                     if (Array.isArray(body[part.fieldname])) {
-                        arr.push(`/upload/${uuid}-${part.filename.split('.').pop()}`, ...body[part.fieldname])
+                        arr.push(`/upload/${uuid}-.${part.filename.split('.').pop()}`, ...body[part.fieldname])
                     } else {
-                        arr.push(`/upload/${uuid}-${part.filename.split('.').pop()}`, body[part.fieldname])
+                        arr.push(`/upload/${uuid}-.${part.filename.split('.').pop()}`, body[part.fieldname])
                     }
 
                     body[part.fieldname] = arr
                 } else {
-                    body[part.fieldname] = `/upload/${uuid}-${part.filename.split('.').pop()}`
+                    body[part.fieldname] = `/upload/${uuid}-.${part.filename.split('.').pop()}`
                 }
 
             } else if (part.fieldname === 'serialized-json') {
