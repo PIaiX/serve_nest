@@ -7,11 +7,11 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-// -- User ------------------------------------------------------------------------------------------------------
+// -- User ------------------------------------------------------------------------
 model User {
-    id                         Int                   @id @default(autoincrement())
-    email                      String                @unique
-    phone                      String?               @unique
+    id                         Int        @id @default(autoincrement())
+    email                      String     @unique
+    phone                      String?    @unique
     firstName                  String
     lastName                   String?
     middleName                 String?
@@ -19,45 +19,39 @@ model User {
     avatar                     String?
     company                    String?
     userType                   Int
-    // Address
-    country                    String?
-    state                      String?
     city                       String?
-    address                    String?
-    postalCode                 String?
-    about                      String?
     // Settings
-    invisibleBeforeDate        DateTime              @default(now())
+    invisibleBeforeDate        DateTime   @default(now())
     canDisturbMeFrom           String?
     canDisturbMeTo             String?
-    isReducingLastName         Boolean               @default(false)
-    isShowingPatronymic        Boolean               @default(false)
+    isReducingLastName         Boolean    @default(false)
+    isShowingPatronymic        Boolean    @default(false)
     // Notifications
-    emailOnPickOrOffer         Boolean               @default(false)
-    notificationOnPickOrOffer  Boolean               @default(false)
-    callsOnPickOrOffer         Boolean               @default(false)
-    emailOnNewOrder            Boolean               @default(false)
-    notificationsOnNewOrder    Boolean               @default(false)
-    newOrdersPeriodicity       Int                   @default(1)
-    emailOnOthers              Boolean               @default(false)
-    smsAndCallsOnOthers        Boolean               @default(false)
+    emailOnPickOrOffer         Boolean    @default(false)
+    notificationOnPickOrOffer  Boolean    @default(false)
+    callsOnPickOrOffer         Boolean    @default(false)
+    emailOnNewOrder            Boolean    @default(false)
+    notificationsOnNewOrder    Boolean    @default(false)
+    newOrdersPeriodicity       Int        @default(1)
+    emailOnOthers              Boolean    @default(false)
+    smsAndCallsOnOthers        Boolean    @default(false)
     timeToNotificationsFrom    String?
     timeToNotificationsTo      String?
-    anyTime                    Boolean               @default(false)
+    anyTime                    Boolean    @default(false)
     // Communications
-    isCustomerAllowedToCall    Boolean               @default(true)
-    isCustomerAllowedToChat    Boolean               @default(true)
-    isCustomerAllowedToSuggest Boolean               @default(true)
+    isCustomerAllowedToCall    Boolean    @default(true)
+    isCustomerAllowedToChat    Boolean    @default(true)
+    isCustomerAllowedToSuggest Boolean    @default(true)
+    // Orders
+    orders                     Order[]
+    responses                  Response[]
     // Meta
-    role                       Role                  @default(USER)
-    createdAt                  DateTime              @default(now())
+    role                       Role       @default(USER)
+    createdAt                  DateTime   @default(now())
     updatedAt                  DateTime?
     //
     password                   Password?
     session                    Session[]
-    cart                       ProductsInCarts[]
-    favorites                  ProductsInFavorites[]
-    orders                     Order[]
 }
 
 enum Role {
@@ -91,67 +85,63 @@ model EmailData {
     @@id([code, token])
 }
 
-// -- Cart ------------------------------------------------------------------------------------------------------
-model ProductsInCarts {
-    userId     Int
-    productId  Int
-    productQty Int
-    addedAt    DateTime @default(now())
-    //
-    user       User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    product    Product  @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-
-    @@id([userId, productId])
+// -- Category --------------------------------------------------------------------
+model Category {
+    id            Int           @id @default(autoincrement())
+    name          String
+    subcategories Subcategory[]
 }
 
-// -- Favorites -------------------------------------------------------------------------------------------------
-model ProductsInFavorites {
-    userId    Int
-    productId Int
-    addedAt   DateTime @default(now())
+// -- Subcategory -----------------------------------------------------------------
+model Subcategory {
+    id         Int       @id @default(autoincrement())
+    categoryId Int?
+    name       String
+    orders     Order[]
     //
-    user      User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    product   Product  @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-
-    @@id([userId, productId])
+    category   Category? @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
-// -- Orders ----------------------------------------------------------------------------------------------------
+// -- Order -----------------------------------------------------------------------
 model Order {
-    id        Int                @id @default(autoincrement())
-    userId    Int
-    createdAt DateTime           @default(now())
-    products  ProductsInOrders[]
+    id             Int          @id @default(autoincrement())
+    subcategoryId  Int?
+    userId         Int?
+    title          String
+    description    String?
+    location       Locations
+    cityId         Int?
+    budget         Int
+    budgetType     String
+    deadline       DateTime
+    images         String[]
+    phoneIsVisible Boolean      @default(true)
+    responses      Response[]
     //
-    user      User               @relation(fields: [userId], references: [id])
+    subcategory    Subcategory? @relation(fields: [subcategoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    user           User?        @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    city           City?        @relation(fields: [cityId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
-model ProductsInOrders {
-    orderId   Int
-    productId Int
-    //
-    order     Order   @relation(fields: [orderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    product   Product @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-
-    @@id([orderId, productId])
+enum Locations {
+    HERE
+    THERE
+    REMOTE
 }
 
-// -- Product ---------------------------------------------------------------------------------------------------
-model Product {
-    id          Int                   @id @default(autoincrement())
-    title       String
-    price       Int
-    code        String?
-    description String?
-    image       String?
-    images      String[]
-    isVisible   Boolean               @default(false)
-    createdAt   DateTime              @default(now())
-    createdBy   String
-    updatedAt   DateTime?
-    updatedBy   String?
-    //
-    inCart      ProductsInCarts[]
-    inFavorites ProductsInFavorites[]
-    inOrders    ProductsInOrders[]
+model Response {
+    user    User  @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    userId  Int
+    order   Order @relation(fields: [orderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    orderId Int
+
+    @@id([userId, orderId])
+}
+
+// -- City ------------------------------------------------------------------------
+model City {
+    id     Int     @id @default(autoincrement())
+    en     String
+    ru     String
+    orders Order[]
 }
