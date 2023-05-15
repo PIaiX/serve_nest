@@ -45,22 +45,9 @@ export class User implements Prisma.User {
     /** User avatar image */
     avatar: string
 
-    /** User address */
-    @Length(2, 24, { message: ValidationError.ADDRESS })
-    country: string
-
-    @Length(2, 24, { message: ValidationError.ADDRESS })
-    state: string
-
+    /** User city */
     @Length(2, 24, { message: ValidationError.ADDRESS })
     city: string
-
-    @Length(2, 24, { message: ValidationError.ADDRESS })
-    address: string
-
-    @IsNumberString({}, { message: ValidationError.POSTAL_CODE })
-    @Length(6, 6, { message: ValidationError.POSTAL_CODE })
-    postalCode: string
 
     /** Is user profile is visible for all 
      * @example Date
