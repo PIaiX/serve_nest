@@ -20,7 +20,7 @@ export class UsersController {
     @Roles('ADMIN')
     @ApiOkResponse({ type: Users })
     findAll(@Query() params: PaginationQueryParams) {
-        return this.usersService.findAll(params)
+        return this.usersService.findAll()
     }
 
     /** Get user by ID */

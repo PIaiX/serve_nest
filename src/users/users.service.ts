@@ -25,32 +25,36 @@ export class UsersService {
         })
     }
 
-    async findAll(params: PaginationQueryParams) {
-        let take = params.perPage ? +params.perPage : 20
-        let page = params.page ? +params.page : 1
-        let skip = (page * take) - take
-        let orderBy = params.orderBy ?? 'id'
-        let sort = params.sort ?? 'asc'
-        const [count, users] = await Promise.all([
-            this.prismaService.product.count(),
-            this.prismaService.product.findMany({
-                skip,
-                take,
-                orderBy: { [orderBy]: sort }
-            })
-        ])
-        let last = Math.ceil(count / take)
-        return {
-            users,
-            pages: {
-                first: 1,
-                previous: page !== 1 ? page - 1 : null,
-                current: page,
-                next: page !== last ? page + 1 : null,
-                last
-            }
-        }
+    async findAll() {
+        return this.prismaService.user.findMany()
     }
+
+    // async findAll(params: PaginationQueryParams) {
+    //     let take = params.perPage ? +params.perPage : 20
+    //     let page = params.page ? +params.page : 1
+    //     let skip = (page * take) - take
+    //     let orderBy = params.orderBy ?? 'id'
+    //     let sort = params.sort ?? 'asc'
+    //     const [count, users] = await Promise.all([
+    //         this.prismaService.product.count(),
+    //         this.prismaService.product.findMany({
+    //             skip,
+    //             take,
+    //             orderBy: { [orderBy]: sort }
+    //         })
+    //     ])
+    //     let last = Math.ceil(count / take)
+    //     return {
+    //         users,
+    //         pages: {
+    //             first: 1,
+    //             previous: page !== 1 ? page - 1 : null,
+    //             current: page,
+    //             next: page !== last ? page + 1 : null,
+    //             last
+    //         }
+    //     }
+    // }
 
     async findOne(id: number) {
         return this.prismaService.user.findUnique({
