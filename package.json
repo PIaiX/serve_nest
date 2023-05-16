@@ -9,7 +9,9 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main"
+    "start:prod": "node dist/main",
+    "dist": "scp -r C:/Users/Admon/Desktop/serve_nest/dist/* root@45.9.43.46:/var/www/server/dist/",
+    "prisma": "scp -r C:/Users/Admon/Desktop/serve_nest/prisma/* root@45.9.43.46:/var/www/server/prisma/"
   },
   "dependencies": {
     "@fastify/cookie": "^8.3.0",

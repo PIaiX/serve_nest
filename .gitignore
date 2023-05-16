@@ -12,6 +12,7 @@
 
 # NodeJS environment variables
 .env
+prod.env
 
 # Logs
 logs
