@@ -34,7 +34,7 @@ export enum Exeption {
 export enum ValidationError {
     CODE_IS_NUMBER = 'только цифры',
     CODE = 'код должен состоять из 5 цифр',
-    EMAIL = 'не корркнтный email',
+    EMAIL = 'не коррекнтный email',
     PHONE_IS_NUMBER = 'только цифры и +',
     PHONE = 'только 12 символов, включая +7',
     NAME = 'более 2-х, менее 24 букв',
