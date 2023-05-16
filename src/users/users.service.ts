@@ -104,4 +104,20 @@ export class UsersService {
             where: { id }
         })
     }
+
+    async userOrders(userId: number) {
+        return this.prismaService.order.findMany({
+            where: { userId },
+            include: {
+                subcategory: {
+                    select: {
+                        name: true,
+                        category: { select: { name: true } }
+                    }
+                },
+                city: true,
+                responses: true
+            }
+        })
+    }
 }

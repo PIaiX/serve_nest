@@ -53,4 +53,12 @@ export class UsersController {
     updatePassword(@Req() request: FastifyRequest, @Body() { password, currentPassword }: UpdateUserPasswordDto) {
         return this.usersService.updatePassword(+request.headers.userId, password, currentPassword)
     }
+
+    /** Get user orders */
+    @Get(':id/orders')
+    @ApiOkResponse({ type: User })
+    userOrders(@Req() request: FastifyRequest, @Param('id') id: string) {
+        if (request.headers.userId !== id) throw new ForbiddenException()
+        return this.usersService.userOrders(+id)
+    }
 }
