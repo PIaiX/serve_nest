@@ -42,6 +42,8 @@ model User {
     isCustomerAllowedToCall    Boolean    @default(true)
     isCustomerAllowedToChat    Boolean    @default(true)
     isCustomerAllowedToSuggest Boolean    @default(true)
+    // Profile
+    profile                    Profile?
     // Orders
     orders                     Order[]
     responses                  Response[]
@@ -52,6 +54,8 @@ model User {
     //
     password                   Password?
     session                    Session[]
+    profileId                  Int?
+    address                    Address[]
 }
 
 enum Role {
@@ -85,6 +89,75 @@ model EmailData {
     @@id([code, token])
 }
 
+// -- Profile ---------------------------------------------------------------------
+model Profile {
+    userId      Int                    @id
+    // Profile photo
+    image       String?
+    // Adresses
+    addresses   Address[]
+    // General info
+    about       String?
+    gender      Gender                 @default(FEMALE)
+    dateOfBirth DateTime?
+    videos      String[]
+    educations  String[]
+    certs       String[]
+    whatsApp    String?
+    telegram    String?
+    skype       String?
+    mail        String?
+    youTube     String?
+    webSite     String?
+    // Specialties
+    specialties SubcategoryInProfile[]
+    // Offers
+    offers      Offer[]
+    //
+    user        User                   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model Address {
+    id             Int     @id @default(autoincrement())
+    title          String?
+    city           String?
+    streetName     String?
+    buildingNumber String?
+    entrance       String?
+    storey         String?
+    apartment      String?
+    //
+    user           User    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    userId         Int
+    profile        Profile @relation(fields: [profileUserId], references: [userId])
+    profileUserId  Int
+}
+
+enum Gender {
+    MALE
+    FEMALE
+}
+
+model Offer {
+    id            Int          @id @default(autoincrement())
+    profileUserId Int
+    subcategoryId Int
+    list          OffersList[]
+    // About
+    //
+    profile       Profile      @relation(fields: [profileUserId], references: [userId])
+    subcategory   Subcategory  @relation(fields: [subcategoryId], references: [id])
+}
+
+model OffersList {
+    id      Int    @id @default(autoincrement())
+    offerId Int
+    title   String
+    price   Int
+    //
+    offer   Offer  @relation(fields: [offerId], references: [id])
+}
+
 // -- Category --------------------------------------------------------------------
 model Category {
     id            Int           @id @default(autoincrement())
@@ -94,12 +167,23 @@ model Category {
 
 // -- Subcategory -----------------------------------------------------------------
 model Subcategory {
-    id         Int       @id @default(autoincrement())
+    id         Int                    @id @default(autoincrement())
     categoryId Int?
     name       String
     orders     Order[]
+    offers     Offer[]
+    inProfiles SubcategoryInProfile[]
     //
-    category   Category? @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    category   Category?              @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model SubcategoryInProfile {
+    profile       Profile     @relation(fields: [profileUserId], references: [userId])
+    profileUserId Int
+    subcategory   Subcategory @relation(fields: [subcategoryId], references: [id])
+    subcategoryId Int
+
+    @@id([profileUserId, subcategoryId])
 }
 
 // -- Order -----------------------------------------------------------------------
@@ -114,7 +198,7 @@ model Order {
     budget         Int
     budgetType     String
     deadline       DateTime
-    images         String[]
+    files          String[]
     phoneIsVisible Boolean      @default(true)
     responses      Response[]
     //
