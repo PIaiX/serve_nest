@@ -11,7 +11,7 @@ export class Order implements Prisma.Order {
     budget: number
     budgetType: string
     deadline: Date
-    images: string[]
+    files: string[]
     phoneIsVisible: boolean
 }
 
