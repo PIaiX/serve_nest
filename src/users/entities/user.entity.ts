@@ -75,6 +75,8 @@ export class User implements Prisma.User {
     /** Type of the user. May be company or person */
     userType: number
 
+    profileId: number
+
     canDisturbMeFrom: string
     canDisturbMeTo: string
     isReducingLastName: boolean
