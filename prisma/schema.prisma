@@ -91,14 +91,14 @@ model EmailData {
 
 // -- Profile ---------------------------------------------------------------------
 model Profile {
-    userId      Int                    @id
+    userId      Int          @id
     // Profile photo
     image       String?
     // Adresses
     addresses   Address[]
     // General info
     about       String?
-    gender      Gender                 @default(FEMALE)
+    gender      Gender       @default(FEMALE)
     dateOfBirth DateTime?
     videos      String[]
     educations  String[]
@@ -110,11 +110,9 @@ model Profile {
     youTube     String?
     webSite     String?
     // Specialties
-    specialties SubcategoryInProfile[]
-    // Offers
-    offers      Offer[]
+    specialties Specialtiy[]
     //
-    user        User                   @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    user        User         @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Address {
@@ -129,7 +127,7 @@ model Address {
     //
     user           User    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     userId         Int
-    profile        Profile @relation(fields: [profileUserId], references: [userId])
+    profile        Profile @relation(fields: [profileUserId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
     profileUserId  Int
 }
 
@@ -138,24 +136,59 @@ enum Gender {
     FEMALE
 }
 
-model Offer {
-    id            Int          @id @default(autoincrement())
+model Specialtiy {
+    id            Int                 @id @default(autoincrement())
     profileUserId Int
     subcategoryId Int
-    list          OffersList[]
+    offers        Offers[]
     // About
+    params        ParamInSpecialtiy[]
+    days          String[]
+    timeStart     String[]
+    timeEnd       String[]
+    additional    String?
+    // Spetial
+    tillDate      DateTime            @default(now())
+    sale          Int?
+    descr         String?
+    // Locations
+    locations     Locations[]
     //
-    profile       Profile      @relation(fields: [profileUserId], references: [userId])
-    subcategory   Subcategory  @relation(fields: [subcategoryId], references: [id])
+    profile       Profile             @relation(fields: [profileUserId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
+    subcategory   Subcategory         @relation(fields: [subcategoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
-model OffersList {
-    id      Int    @id @default(autoincrement())
-    offerId Int
-    title   String
-    price   Int
+model Offers {
+    id           Int        @id @default(autoincrement())
+    specialtiyId Int
+    title        String
+    price        Int
     //
-    offer   Offer  @relation(fields: [offerId], references: [id])
+    specialtiy   Specialtiy @relation(fields: [specialtiyId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model SpecialtiyParams {
+    id      Int                      @id @default(autoincrement())
+    name    String
+    options SpecialtiyParamsOption[]
+}
+
+model SpecialtiyParamsOption {
+    id                 Int                 @id @default(autoincrement())
+    specialtiyParamsId Int
+    inSpecialties      ParamInSpecialtiy[]
+    name               String
+    //
+    specialtiyParams   SpecialtiyParams    @relation(fields: [specialtiyParamsId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model ParamInSpecialtiy {
+    Specialtiy               Specialtiy             @relation(fields: [specialtiyId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    specialtiyId             Int
+    SpecialtiyParamsOption   SpecialtiyParamsOption @relation(fields: [specialtiyParamsOptionId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    specialtiyParamsOptionId Int
+
+    @@id([specialtiyId, specialtiyParamsOptionId])
 }
 
 // -- Category --------------------------------------------------------------------
@@ -167,23 +200,13 @@ model Category {
 
 // -- Subcategory -----------------------------------------------------------------
 model Subcategory {
-    id         Int                    @id @default(autoincrement())
-    categoryId Int?
-    name       String
-    orders     Order[]
-    offers     Offer[]
-    inProfiles SubcategoryInProfile[]
+    id          Int          @id @default(autoincrement())
+    categoryId  Int?
+    name        String
+    orders      Order[]
+    specialties Specialtiy[]
     //
-    category   Category?              @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-}
-
-model SubcategoryInProfile {
-    profile       Profile     @relation(fields: [profileUserId], references: [userId])
-    profileUserId Int
-    subcategory   Subcategory @relation(fields: [subcategoryId], references: [id])
-    subcategoryId Int
-
-    @@id([profileUserId, subcategoryId])
+    category    Category?    @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 // -- Order -----------------------------------------------------------------------
