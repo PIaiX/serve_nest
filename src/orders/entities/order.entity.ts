@@ -13,6 +13,8 @@ export class Order implements Prisma.Order {
     deadline: Date
     files: string[]
     phoneIsVisible: boolean
+    isActive: boolean
+    createdAt: Date
 }
 
 export enum Locations {

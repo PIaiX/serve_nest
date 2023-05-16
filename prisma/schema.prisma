@@ -201,6 +201,8 @@ model Order {
     files          String[]
     phoneIsVisible Boolean      @default(true)
     responses      Response[]
+    isActive       Boolean      @default(true)
+    createdAt      DateTime     @default(now())
     //
     subcategory    Subcategory? @relation(fields: [subcategoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     user           User?        @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
