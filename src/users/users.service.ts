@@ -20,6 +20,9 @@ export class UsersService {
                     create: {
                         hash: passwordHash
                     }
+                },
+                profile: {
+                    create: {}
                 }
             }
         })
