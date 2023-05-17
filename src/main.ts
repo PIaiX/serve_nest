@@ -47,7 +47,7 @@ async function bootstrap() {
 
     // multipart/form-data
     await app.register(fastifyMultipart, {
-        limits: { fileSize: 5000000 }
+        limits: { fileSize: 20000000 }
     })
     app.useGlobalInterceptors(new FormDataInterceptor())
 
