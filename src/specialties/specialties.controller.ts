@@ -23,18 +23,18 @@ export class SpecialtiesController {
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.specialtiesService.findOne({ profileUserId: Number(id.split('_')[0]), subcategoryId: Number(id.split('_')[1]) })
+    findOne(@Req() request: FastifyRequest, @Param('id') id: string) {
+        return this.specialtiesService.findOne({ profileUserId: +request.headers.userId, subcategoryId: +id })
     }
 
     @Patch(':id')
     update(@Req() request: FastifyRequest, @Param('id') id: string, @Body() updateSpecialtyDto: UpdateSpecialtyDto) {
         if (request.headers.userId !== updateSpecialtyDto.profileUserId.toString()) throw new ForbiddenException()
-        // return this.specialtiesService.update(+id, updateSpecialtyDto)
+        return this.specialtiesService.update({ profileUserId: +request.headers.userId, subcategoryId: +id }, updateSpecialtyDto)
     }
 
-    // @Delete(':id')
-    // remove(@Param('id') id: string) {
-    //   return this.specialtiesService.remove(+id)
-    // }
+    @Delete(':id')
+    remove(@Req() request: FastifyRequest, @Param('id') id: string) {
+        return this.specialtiesService.remove({ profileUserId: +request.headers.userId, subcategoryId: +id })
+    }
 }
