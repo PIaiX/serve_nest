@@ -53,6 +53,15 @@ export class SpecialtiesService {
                                 profileUserId: id
                             }
                         }
+                    },
+                    include: {
+                        specialties: {
+                            include: {
+                                offers: true,
+                                params: true,
+                                subcategory: true
+                            }
+                        }
                     }
                 }
             }
@@ -68,13 +77,21 @@ export class SpecialtiesService {
     update(id: SpecialtyId, updateSpecialtyDto: UpdateSpecialtyDto) {
         return this.prismaService.specialty.update({
             where: { profileUserId_subcategoryId: id },
-            data: updateSpecialtyDto
+            data: {
+                ...updateSpecialtyDto,
+                offers: {
+                    deleteMany: {},
+                    createMany: {
+                        data: [{ title: '', price: 3 }, { title: '', price: 3 }]
+                    }
+                }
+            }
         })
     }
 
-    remove(id: number) {
+    remove(id: SpecialtyId) {
         return this.prismaService.specialty.delete({
-            where: { profileUserId_subcategoryId: { profileUserId: id, subcategoryId: id } }
+            where: { profileUserId_subcategoryId: id }
         })
     }
 }
