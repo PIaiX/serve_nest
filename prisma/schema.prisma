@@ -165,9 +165,9 @@ model Offers {
     id                     Int        @id @default(autoincrement())
     specialtyProfileUserId Int
     specialtySubcategoryId Int
-    specialtyId            Int
     title                  String
     price                  Int
+    priceUnit              String?
     //
     Specialty              Specialty? @relation(fields: [specialtyProfileUserId, specialtySubcategoryId], references: [profileUserId, subcategoryId], onUpdate: Cascade, onDelete: Cascade)
 }
