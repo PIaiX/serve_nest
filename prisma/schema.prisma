@@ -91,14 +91,14 @@ model EmailData {
 
 // -- Profile ---------------------------------------------------------------------
 model Profile {
-    userId      Int          @id
+    userId      Int         @id
     // Profile photo
     image       String?
     // Adresses
     addresses   Address[]
     // General info
     about       String?
-    gender      Gender       @default(FEMALE)
+    gender      Gender      @default(FEMALE)
     dateOfBirth DateTime?
     videos      String[]
     educations  String[]
@@ -110,9 +110,9 @@ model Profile {
     youTube     String?
     webSite     String?
     // Specialties
-    specialties Specialtiy[]
+    specialties Specialty[]
     //
-    user        User         @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    user        User        @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Address {
@@ -136,59 +136,66 @@ enum Gender {
     FEMALE
 }
 
-model Specialtiy {
-    id            Int                 @id @default(autoincrement())
+model Specialty {
     profileUserId Int
     subcategoryId Int
+    categoryId    Int
     offers        Offers[]
     // About
-    params        ParamInSpecialtiy[]
+    params        ParamInSpecialty[]
     days          String[]
     timeStart     String[]
     timeEnd       String[]
     additional    String?
     // Spetial
-    tillDate      DateTime            @default(now())
+    tillDate      DateTime           @default(now())
     sale          Int?
     descr         String?
     // Locations
     locations     Locations[]
     //
-    profile       Profile             @relation(fields: [profileUserId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
-    subcategory   Subcategory         @relation(fields: [subcategoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    profile       Profile            @relation(fields: [profileUserId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
+    subcategory   Subcategory        @relation(fields: [subcategoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+    @@id([profileUserId, subcategoryId])
+    @@unique([profileUserId, subcategoryId])
 }
 
 model Offers {
-    id           Int        @id @default(autoincrement())
-    specialtiyId Int
-    title        String
-    price        Int
+    id                     Int        @id @default(autoincrement())
+    specialtyProfileUserId Int
+    specialtySubcategoryId Int
+    specialtyId            Int
+    title                  String
+    price                  Int
     //
-    specialtiy   Specialtiy @relation(fields: [specialtiyId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    Specialty              Specialty? @relation(fields: [specialtyProfileUserId, specialtySubcategoryId], references: [profileUserId, subcategoryId], onUpdate: Cascade, onDelete: Cascade)
 }
 
-model SpecialtiyParams {
-    id      Int                      @id @default(autoincrement())
+model SpecialtyParams {
+    id      Int                     @id @default(autoincrement())
     name    String
-    options SpecialtiyParamsOption[]
+    options SpecialtyParamsOption[]
 }
 
-model SpecialtiyParamsOption {
-    id                 Int                 @id @default(autoincrement())
-    specialtiyParamsId Int
-    inSpecialties      ParamInSpecialtiy[]
-    name               String
+model SpecialtyParamsOption {
+    id                Int                @id @default(autoincrement())
+    specialtyParamsId Int
+    inSpecialties     ParamInSpecialty[]
+    name              String
     //
-    specialtiyParams   SpecialtiyParams    @relation(fields: [specialtiyParamsId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    specialtyParams   SpecialtyParams    @relation(fields: [specialtyParamsId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
-model ParamInSpecialtiy {
-    Specialtiy               Specialtiy             @relation(fields: [specialtiyId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    specialtiyId             Int
-    SpecialtiyParamsOption   SpecialtiyParamsOption @relation(fields: [specialtiyParamsOptionId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    specialtiyParamsOptionId Int
+model ParamInSpecialty {
+    specialtyId             Int
+    specialtyParamsOption   SpecialtyParamsOption @relation(fields: [specialtyParamsOptionId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    specialtyParamsOptionId Int
+    Specialty               Specialty             @relation(fields: [specialtyProfileUserId, specialtySubcategoryId], references: [profileUserId, subcategoryId], onUpdate: Cascade, onDelete: Cascade)
+    specialtyProfileUserId  Int
+    specialtySubcategoryId  Int
 
-    @@id([specialtiyId, specialtiyParamsOptionId])
+    @@id([specialtyId, specialtyParamsOptionId])
 }
 
 // -- Category --------------------------------------------------------------------
@@ -200,13 +207,13 @@ model Category {
 
 // -- Subcategory -----------------------------------------------------------------
 model Subcategory {
-    id          Int          @id @default(autoincrement())
+    id          Int         @id @default(autoincrement())
     categoryId  Int?
     name        String
     orders      Order[]
-    specialties Specialtiy[]
+    specialties Specialty[]
     //
-    category    Category?    @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    category    Category?   @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 // -- Order -----------------------------------------------------------------------
@@ -250,7 +257,7 @@ model Response {
 // -- City ------------------------------------------------------------------------
 model City {
     id     Int     @id @default(autoincrement())
-    en     String
-    ru     String
+    en     String?
+    ru     String?
     orders Order[]
 }
