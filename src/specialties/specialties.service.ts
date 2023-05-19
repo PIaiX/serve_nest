@@ -57,10 +57,13 @@ export class SpecialtiesService {
                     include: {
                         specialties: {
                             include: {
-                                offers: true,
-                                params: true,
+                                offers: { select: { title: true, price: true, priceUnit: true } },
+                                params: { select: { specialtyParamsOptionId: true } },
                                 subcategory: true
                             }
+                        },
+                        specialtyParams: {
+                            select: { specialtyParams: { include: { options: true } } }
                         }
                     }
                 }
@@ -75,15 +78,18 @@ export class SpecialtiesService {
     }
 
     update(id: SpecialtyId, updateSpecialtyDto: UpdateSpecialtyDto) {
+        const { offers, params, ...rest } = updateSpecialtyDto
         return this.prismaService.specialty.update({
             where: { profileUserId_subcategoryId: id },
             data: {
-                ...updateSpecialtyDto,
+                ...rest,
                 offers: {
                     deleteMany: {},
-                    createMany: {
-                        data: [{ title: '', price: 3 }, { title: '', price: 3 }]
-                    }
+                    createMany: { data: offers }
+                },
+                params: {
+                    deleteMany: {},
+                    createMany: { data: params }
                 }
             }
         })
