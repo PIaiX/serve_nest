@@ -29,7 +29,6 @@ export class SpecialtiesController {
 
     @Patch(':id')
     update(@Req() request: FastifyRequest, @Param('id') id: string, @Body() updateSpecialtyDto: UpdateSpecialtyDto) {
-        if (request.headers.userId !== updateSpecialtyDto.profileUserId.toString()) throw new ForbiddenException()
         return this.specialtiesService.update({ profileUserId: +request.headers.userId, subcategoryId: +id }, updateSpecialtyDto)
     }
 
