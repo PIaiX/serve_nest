@@ -5,8 +5,8 @@ export class Specialty implements Prisma.Specialty {
     subcategoryId: number
     categoryId: number
     days: string[]
-    timeStart: string[]
-    timeEnd: string[]
+    timeStart: string
+    timeEnd: string
     additional: string | null
     tillDate: Date
     sale: number | null
@@ -17,4 +17,19 @@ export class Specialty implements Prisma.Specialty {
 export class SpecialtyId {
     profileUserId: number
     subcategoryId: number
+}
+
+export class Offer implements Prisma.Offer {
+    id: number
+    specialtyProfileUserId: number
+    specialtySubcategoryId: number
+    title: string
+    price: number
+    priceUnit: string | null
+}
+
+export class ParamInSpecialty implements Prisma.ParamInSpecialty {
+    specialtyParamsOptionId: number
+    specialtyProfileUserId: number
+    specialtySubcategoryId: number
 }
