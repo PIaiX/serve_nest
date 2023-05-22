@@ -22,3 +22,32 @@ export enum Locations {
     THERE = 'THERE',
     REMOTE = 'REMOTE'
 }
+
+export class OrderQueryParams {
+    /* Page */
+    page: number = 1
+
+    /* Items per page */
+    perPage?: number = 20
+
+    /* Field name to order by */
+    orderBy?: OrderBy = OrderBy.id
+
+    /* Sort direction */
+    sort?: Sort = Sort.asc
+
+    filter?: string
+
+    s?: string
+}
+
+enum Sort {
+    asc = 'asc',
+    desc = 'desc'
+}
+
+enum OrderBy {
+    id = 'id',
+    title = 'title',
+    price = 'price'
+}
