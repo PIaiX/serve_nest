@@ -32,7 +32,27 @@ export class SpecialtiesService {
         }))
     }
 
-    findAll(id: number) {
+    findAllBySubcategory(id: number) {
+        return this.prismaService.specialty.findMany({
+            where: { subcategoryId: id },
+            include: {
+                offers: true,
+                profile: {
+                    include: {
+                        user: {
+                            select: {
+                                firstName: true,
+                                lastName: true,
+                                city: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    findAllByUser(id: number) {
         return this.prismaService.category.findMany({
             where: {
                 subcategories: {
@@ -71,7 +91,7 @@ export class SpecialtiesService {
         })
     }
 
-    findOne(id: SpecialtyId) {
+    findOneByUser(id: SpecialtyId) {
         return this.prismaService.specialty.findUnique({
             where: { profileUserId_subcategoryId: id }
         })
