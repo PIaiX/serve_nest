@@ -12,6 +12,7 @@ export class Specialty implements Prisma.Specialty {
     sale: number | null
     descr: string | null
     locations: Locations[]
+    images: string[]
 }
 
 export class SpecialtyId {
