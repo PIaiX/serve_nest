@@ -55,7 +55,6 @@ model User {
     password                   Password?
     session                    Session[]
     profileId                  Int?
-    address                    Address[]
 }
 
 enum Role {
@@ -118,6 +117,9 @@ model Profile {
 model Address {
     id             Int     @id @default(autoincrement())
     title          String?
+    postcode       String?
+    country        String?
+    region         String?
     city           String?
     streetName     String?
     buildingNumber String?
@@ -125,8 +127,6 @@ model Address {
     storey         String?
     apartment      String?
     //
-    user           User    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    userId         Int
     profile        Profile @relation(fields: [profileUserId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
     profileUserId  Int
 }
