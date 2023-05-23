@@ -35,9 +35,9 @@ export class FormDataInterceptor implements NestInterceptor {
                     let arr = []
 
                     if (Array.isArray(body[part.fieldname])) {
-                        arr.push(`/upload/${uuid}-.${part.filename.split('.').pop()}`, ...body[part.fieldname])
+                        arr = [...body[part.fieldname], `/upload/${uuid}-.${part.filename.split('.').pop()}`]
                     } else {
-                        arr.push(`/upload/${uuid}-.${part.filename.split('.').pop()}`, body[part.fieldname])
+                        arr = [body[part.fieldname], `/upload/${uuid}-.${part.filename.split('.').pop()}`]
                     }
 
                     body[part.fieldname] = arr
@@ -50,7 +50,21 @@ export class FormDataInterceptor implements NestInterceptor {
                 body = { ...body, ...json }
 
             } else {
-                body[part.fieldname] = part.value
+
+                if (body[part.fieldname]) {
+                    let arr = []
+
+                    if (Array.isArray(body[part.fieldname])) {
+                        arr = [...body[part.fieldname], part.value]
+                    } else {
+                        arr = [body[part.fieldname], part.value]
+                    }
+
+                    body[part.fieldname] = arr
+
+                } else {
+                    body[part.fieldname] = part.value
+                }
             }
         }
 
