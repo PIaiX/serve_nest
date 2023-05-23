@@ -8,12 +8,14 @@ import { User, Users } from './entities/user.entity'
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger'
 import { PaginationQueryParams } from 'src/_common/@types/pagination.entity'
 import { UpdateUserPasswordDto } from './dto/update-user-password.dto'
+import { OrderQueryParams } from 'src/orders/entities/order.entity'
+import { OrdersService } from 'src/orders/orders.service'
 
 @Controller('users')
 @UseGuards(AuthGuard)
 @ApiTags('Users')
 export class UsersController {
-    constructor(private readonly usersService: UsersService) { }
+    constructor(private readonly usersService: UsersService, private readonly ordersService: OrdersService) { }
 
     /** Get all user (ADMIN) */
     @Get()
@@ -60,5 +62,13 @@ export class UsersController {
     userOrders(@Req() request: FastifyRequest, @Param('id') id: string) {
         if (request.headers.userId !== id) throw new ForbiddenException()
         return this.usersService.userOrders(+id)
+    }
+
+    /** Get user responses */
+    @Get(':id/responses')
+    @ApiOkResponse({ type: User })
+    userResponses(@Req() request: FastifyRequest, @Param('id') id: string, @Query() params: OrderQueryParams) {
+        if (request.headers.userId !== id) throw new ForbiddenException()
+        return this.ordersService.findAll(params, +request.headers.userId)
     }
 }
