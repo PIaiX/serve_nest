@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { CreateSpecialtyDto } from './dto/create-specialty.dto'
 import { UpdateSpecialtyDto } from './dto/update-specialty.dto'
 import { PrismaService } from 'src/_common/prisma/prisma.service'
-import { SpecialtyId } from './entities/specialty.entity'
+import { SpecialtyId, SpecialtyQueryParams } from './entities/specialty.entity'
 
 @Injectable()
 export class SpecialtiesService {
@@ -32,24 +32,55 @@ export class SpecialtiesService {
         }))
     }
 
-    findAllBySubcategory(id: number) {
-        return this.prismaService.specialty.findMany({
-            where: { subcategoryId: id },
-            include: {
-                offers: true,
-                profile: {
-                    include: {
-                        user: {
-                            select: {
-                                firstName: true,
-                                lastName: true,
-                                city: true
+    async findAllBySubcategory(params: SpecialtyQueryParams, id: number) {
+        let take = params.perPage ? +params.perPage : 20
+        let page = params.page ? +params.page : 1
+        let skip = (page * take) - take
+        let orderBy = params.orderBy ?? 'id'
+        let sort = params.sort ?? 'asc'
+        let search = params.s ?? ''
+
+        const filter = {
+            where: {
+                subcategoryId: id,
+                isVisible: true
+            }
+        }
+
+        const [count, specialties] = await Promise.all([
+            this.prismaService.specialty.count(filter),
+            this.prismaService.specialty.findMany({
+                ...filter,
+                include: {
+                    offers: true,
+                    profile: {
+                        include: {
+                            user: {
+                                select: {
+                                    firstName: true,
+                                    lastName: true,
+                                    city: true
+                                }
                             }
                         }
                     }
-                }
+                },
+                skip,
+                take,
+                // orderBy: { : sort }
+            })
+        ])
+        let last = Math.ceil(count / take)
+        return {
+            specialties,
+            pages: {
+                first: 1,
+                previous: page !== 1 ? page - 1 : null,
+                current: page,
+                next: page !== last ? page + 1 : null,
+                last
             }
-        })
+        }
     }
 
     findAllByUser(id: number) {
