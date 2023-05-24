@@ -13,15 +13,36 @@ export class ProfilesService {
             where: { userId },
             include: {
                 addresses: true,
-                specialties: true
+                specialties: {
+                    include: {
+                        offers: true,
+                        subcategory: {
+                            select: {
+                                name: true,
+                                category: {
+                                    select: { name: true }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         })
     }
 
     update(userId: number, updateProfileDto: UpdateProfileDto) {
+        const { isVisible, ...rest } = updateProfileDto
         return this.prismaService.profile.update({
             where: { userId },
-            data: updateProfileDto
+            data: {
+                ...rest,
+                specialties: {
+                    updateMany: {
+                        where: {},
+                        data: "isVisible" in updateProfileDto ? { isVisible } : {}
+                    }
+                }
+            }
         })
     }
 

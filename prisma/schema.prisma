@@ -140,6 +140,7 @@ model Specialty {
     profileUserId Int
     subcategoryId Int
     categoryId    Int
+    isVisible     Boolean            @default(false)
     offers        Offer[]
     // About
     params        ParamInSpecialty[]
@@ -147,7 +148,7 @@ model Specialty {
     timeStart     String?
     timeEnd       String?
     additional    String?
-    // Spetial
+    // Speсial
     tillDate      DateTime           @default(now())
     sale          Int?
     descr         String?

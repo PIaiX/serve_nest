@@ -4,6 +4,7 @@ export class Specialty implements Prisma.Specialty {
     profileUserId: number
     subcategoryId: number
     categoryId: number
+    isVisible: boolean
     days: string[]
     timeStart: string
     timeEnd: string
@@ -33,4 +34,33 @@ export class ParamInSpecialty implements Prisma.ParamInSpecialty {
     specialtyParamsOptionId: number
     specialtyProfileUserId: number
     specialtySubcategoryId: number
+}
+
+export class SpecialtyQueryParams {
+    /* Page */
+    page: number = 1
+
+    /* Items per page */
+    perPage?: number = 20
+
+    /* Field name to order by */
+    orderBy?: OrderBy = OrderBy.id
+
+    /* Sort direction */
+    sort?: Sort = Sort.asc
+
+    filter?: string
+
+    s?: string
+}
+
+enum Sort {
+    asc = 'asc',
+    desc = 'desc'
+}
+
+enum OrderBy {
+    id = 'id',
+    title = 'title',
+    price = 'price'
 }
