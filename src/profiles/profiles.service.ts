@@ -3,6 +3,8 @@ import { UpdateProfileDto } from './dto/update-profile.dto'
 import { PrismaService } from 'src/_common/prisma/prisma.service'
 import { CreateAddressDto } from './dto/create-address.dto'
 import { UpdateAddressDto } from './dto/update-address.dto'
+import { CreateProfileReviewDto } from './dto/create-profile-review.dto'
+import { UpdateProfileReviewDto } from './dto/update-profile-review.dto'
 
 @Injectable()
 export class ProfilesService {
@@ -12,6 +14,7 @@ export class ProfilesService {
         return this.prismaService.profile.findUnique({
             where: { userId },
             include: {
+                user: true,
                 addresses: true,
                 specialties: {
                     include: {
@@ -23,9 +26,22 @@ export class ProfilesService {
                                     select: { name: true }
                                 }
                             }
+                        },
+                        params: {
+                            select: {
+                                specialtyParamsOption: {
+                                    select: {
+                                        name: true,
+                                        specialtyParams: {
+                                            select: { name: true }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                }
+                },
+
             }
         })
     }
@@ -66,6 +82,63 @@ export class ProfilesService {
 
     deleteAddress(id: number) {
         return this.prismaService.address.delete({
+            where: { id }
+        })
+    }
+
+    createProfileReview(id: number, profileUserId: number, createProfileReviewDto: CreateProfileReviewDto) {
+        const { subcategoryId, ...rest } = createProfileReviewDto
+        return this.prismaService.profileReview.create({
+            data: {
+                ...rest,
+                user: { connect: { id } },
+                profile: { connect: { userId: profileUserId } },
+                specialty: {
+                    connect: {
+                        profileUserId_subcategoryId: {
+                            profileUserId,
+                            subcategoryId
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    findProfileReviews(profileUserId: number) {
+        return this.prismaService.profileReview.findMany({
+            where: { profileUserId },
+            include: {
+                user: true,
+                specialty: {
+                    select: {
+                        subcategory: {
+                            select: {
+                                name: true,
+                                category: { select: { name: true } }
+                            }
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    findOneProfileReview(id: number) {
+        return this.prismaService.profileReview.findUnique({
+            where: { id }
+        })
+    }
+
+    updateProfileReview(id: number, updateProfileReviewDto: UpdateProfileReviewDto) {
+        return this.prismaService.profileReview.update({
+            where: { id },
+            data: updateProfileReviewDto
+        })
+    }
+
+    removProfileReview(id: number) {
+        return this.prismaService.profileReview.delete({
             where: { id }
         })
     }

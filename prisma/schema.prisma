@@ -9,9 +9,9 @@ datasource db {
 
 // -- User ------------------------------------------------------------------------
 model User {
-    id                         Int        @id @default(autoincrement())
-    email                      String     @unique
-    phone                      String?    @unique
+    id                         Int             @id @default(autoincrement())
+    email                      String          @unique
+    phone                      String?         @unique
     firstName                  String
     lastName                   String?
     middleName                 String?
@@ -21,35 +21,37 @@ model User {
     userType                   Int
     city                       String?
     // Settings
-    invisibleBeforeDate        DateTime   @default(now())
+    invisibleBeforeDate        DateTime        @default(now())
     canDisturbMeFrom           String?
     canDisturbMeTo             String?
-    isReducingLastName         Boolean    @default(false)
-    isShowingPatronymic        Boolean    @default(false)
+    isReducingLastName         Boolean         @default(false)
+    isShowingPatronymic        Boolean         @default(false)
     // Notifications
-    emailOnPickOrOffer         Boolean    @default(false)
-    notificationOnPickOrOffer  Boolean    @default(false)
-    callsOnPickOrOffer         Boolean    @default(false)
-    emailOnNewOrder            Boolean    @default(false)
-    notificationsOnNewOrder    Boolean    @default(false)
-    newOrdersPeriodicity       Int        @default(1)
-    emailOnOthers              Boolean    @default(false)
-    smsAndCallsOnOthers        Boolean    @default(false)
+    emailOnPickOrOffer         Boolean         @default(false)
+    notificationOnPickOrOffer  Boolean         @default(false)
+    callsOnPickOrOffer         Boolean         @default(false)
+    emailOnNewOrder            Boolean         @default(false)
+    notificationsOnNewOrder    Boolean         @default(false)
+    newOrdersPeriodicity       Int             @default(1)
+    emailOnOthers              Boolean         @default(false)
+    smsAndCallsOnOthers        Boolean         @default(false)
     timeToNotificationsFrom    String?
     timeToNotificationsTo      String?
-    anyTime                    Boolean    @default(false)
+    anyTime                    Boolean         @default(false)
     // Communications
-    isCustomerAllowedToCall    Boolean    @default(true)
-    isCustomerAllowedToChat    Boolean    @default(true)
-    isCustomerAllowedToSuggest Boolean    @default(true)
+    isCustomerAllowedToCall    Boolean         @default(true)
+    isCustomerAllowedToChat    Boolean         @default(true)
+    isCustomerAllowedToSuggest Boolean         @default(true)
     // Profile
     profile                    Profile?
     // Orders
     orders                     Order[]
     responses                  Response[]
+    // 
+    profilesReviews            ProfileReview[]
     // Meta
-    role                       Role       @default(USER)
-    createdAt                  DateTime   @default(now())
+    role                       Role            @default(USER)
+    createdAt                  DateTime        @default(now())
     updatedAt                  DateTime?
     //
     password                   Password?
@@ -90,14 +92,14 @@ model EmailData {
 
 // -- Profile ---------------------------------------------------------------------
 model Profile {
-    userId      Int         @id
+    userId      Int             @id
     // Profile photo
     image       String?
     // Adresses
     addresses   Address[]
     // General info
     about       String?
-    gender      Gender      @default(FEMALE)
+    gender      Gender          @default(FEMALE)
     dateOfBirth DateTime?
     videos      String[]
     educations  String[]
@@ -110,8 +112,9 @@ model Profile {
     webSite     String?
     // Specialties
     specialties Specialty[]
+    userReviews ProfileReview[]
     //
-    user        User        @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    user        User            @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Address {
@@ -155,6 +158,8 @@ model Specialty {
     images        String[]
     // Locations
     locations     Locations[]
+    //
+    userReviews   ProfileReview[]
     //
     profile       Profile            @relation(fields: [profileUserId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
     subcategory   Subcategory        @relation(fields: [subcategoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
@@ -207,6 +212,21 @@ model ParamInSpecialty {
     specialtySubcategoryId  Int
 
     @@id([specialtyParamsOptionId, specialtyProfileUserId, specialtySubcategoryId])
+}
+
+model ProfileReview {
+    id                     Int        @id @default(autoincrement())
+    profileUserId          Int
+    specialtyProfileUserId Int
+    specialtySubcategoryId Int
+    userId                 Int
+    review                 String?
+    rating                 Int
+    createdAt              DateTime   @default(now())
+    //
+    profile                Profile    @relation(fields: [profileUserId], references: [userId])
+    user                   User       @relation(fields: [userId], references: [id])
+    specialty              Specialty? @relation(fields: [specialtyProfileUserId, specialtySubcategoryId], references: [profileUserId, subcategoryId])
 }
 
 // -- Category --------------------------------------------------------------------

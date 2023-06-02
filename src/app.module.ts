@@ -4,9 +4,9 @@ import { AuthModule } from './auth/auth.module'
 import { OrdersModule } from './orders/orders.module'
 import { CategoriesModule } from './categories/categories.module'
 import { SubcategoriesModule } from './subcategories/subcategories.module'
-import { CitiesModule } from './cities/cities.module';
-import { ProfilesModule } from './profiles/profiles.module';
-import { SpecialtiesModule } from './specialties/specialties.module';
+import { CitiesModule } from './cities/cities.module'
+import { ProfilesModule } from './profiles/profiles.module'
+import { SpecialtiesModule } from './specialties/specialties.module'
 
 @Module({
   imports: [
