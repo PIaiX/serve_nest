@@ -114,6 +114,7 @@ model Profile {
     // Specialties
     specialties Specialty[]
     userReviews ProfileReview[]
+    examples    Example[]
     //
     user        User            @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
@@ -167,6 +168,17 @@ model Specialty {
 
     @@id([profileUserId, subcategoryId])
     @@unique([profileUserId, subcategoryId])
+}
+
+model Example {
+    id            Int     @id @default(autoincrement())
+    profileUserId Int
+    image         String?
+    title         String?
+    description   String?
+    price         Int?
+    //
+    Profile       Profile @relation(fields: [profileUserId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model Offer {
