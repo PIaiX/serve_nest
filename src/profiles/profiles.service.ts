@@ -41,6 +41,8 @@ export class ProfilesService {
                         }
                     }
                 },
+                userReviews: true,
+                _count: { select: { userReviews: true } }
 
             }
         })
@@ -114,8 +116,9 @@ export class ProfilesService {
                     select: {
                         subcategory: {
                             select: {
+                                id: true,
                                 name: true,
-                                category: { select: { name: true } }
+                                category: { select: { id: true, name: true } }
                             }
                         }
                     }
