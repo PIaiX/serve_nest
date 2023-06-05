@@ -3,6 +3,7 @@ import { CreateSpecialtyDto } from './dto/create-specialty.dto'
 import { UpdateSpecialtyDto } from './dto/update-specialty.dto'
 import { PrismaService } from 'src/_common/prisma/prisma.service'
 import { SpecialtyId, SpecialtyQueryParams } from './entities/specialty.entity'
+import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class SpecialtiesService {
@@ -32,7 +33,7 @@ export class SpecialtiesService {
         }))
     }
 
-    async findAllBySubcategory(params: SpecialtyQueryParams, id: number) {
+    async findAllBySubcategory(params: SpecialtyQueryParams, id: number | undefined) {
         let take = params.perPage ? +params.perPage : 20
         let page = params.page ? +params.page : 1
         let skip = (page * take) - take
@@ -40,10 +41,15 @@ export class SpecialtiesService {
         let sort = params.sort ?? 'asc'
         let search = params.s ?? ''
 
+        const mode: Prisma.QueryMode = 'insensitive'
+
         const filter = {
-            where: {
+            where: id !== 0 ? {
                 subcategoryId: id,
-                isVisible: true
+                isVisible: true,
+            } : {
+                isVisible: true,
+                offers: { every: { title: { contains: search, mode } } }
             }
         }
 
@@ -61,9 +67,13 @@ export class SpecialtiesService {
                                     lastName: true,
                                     city: true
                                 }
+                            },
+                            userReviews: true,
+                            _count: {
+                                select: { userReviews: true }
                             }
                         }
-                    }
+                    },
                 },
                 skip,
                 take,
