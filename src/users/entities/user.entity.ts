@@ -19,7 +19,7 @@ export class User implements Prisma.User {
      * @example string 
      */
     @IsNumberString({}, { message: ValidationError.PHONE_IS_NUMBER })
-    @Length(12, 12, { message: ValidationError.PHONE })
+    @Length(11, 11, { message: ValidationError.PHONE })
     phone: string
 
     /** User name */
