@@ -110,6 +110,7 @@ model Profile {
     mail        String?
     youTube     String?
     webSite     String?
+    isActivated Boolean?        @default(false)
     // Specialties
     specialties Specialty[]
     userReviews ProfileReview[]

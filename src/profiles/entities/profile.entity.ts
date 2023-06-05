@@ -15,6 +15,7 @@ export class Profile implements Prisma.Profile {
     mail: string | null
     youTube: string | null
     webSite: string | null
+    isActivated: boolean
 }
 
 export enum Gender {
