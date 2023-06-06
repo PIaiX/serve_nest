@@ -186,8 +186,11 @@ model Offer {
     specialtyProfileUserId Int
     specialtySubcategoryId Int
     title                  String
+    description            String?
+    images                 String[]
     price                  Int
     priceUnit              String?
+    isExample              Boolean    @default(false)
     //
     Specialty              Specialty? @relation(fields: [specialtyProfileUserId, specialtySubcategoryId], references: [profileUserId, subcategoryId], onUpdate: Cascade, onDelete: Cascade)
 }

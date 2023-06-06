@@ -4,6 +4,8 @@ import { UpdateSpecialtyDto } from './dto/update-specialty.dto'
 import { PrismaService } from 'src/_common/prisma/prisma.service'
 import { SpecialtyId, SpecialtyQueryParams } from './entities/specialty.entity'
 import { Prisma } from '@prisma/client'
+import { CreateOfferDto } from './dto/careste-offer.dto'
+import { UpdateOfferDto } from './dto/update-offer.dto'
 
 @Injectable()
 export class SpecialtiesService {
@@ -49,7 +51,7 @@ export class SpecialtiesService {
                 isVisible: true,
             } : {
                 isVisible: true,
-                offers: { every: { title: { contains: search, mode } } }
+                offers: { some: { title: { contains: search, mode } } },
             }
         }
 
@@ -57,6 +59,7 @@ export class SpecialtiesService {
             this.prismaService.specialty.count(filter),
             this.prismaService.specialty.findMany({
                 ...filter,
+                distinct: ['profileUserId'],
                 include: {
                     offers: true,
                     profile: {
@@ -118,7 +121,7 @@ export class SpecialtiesService {
                     include: {
                         specialties: {
                             include: {
-                                offers: { select: { title: true, price: true, priceUnit: true } },
+                                offers: true,
                                 params: { select: { specialtyParamsOptionId: true } },
                                 subcategory: true
                             }
@@ -144,10 +147,6 @@ export class SpecialtiesService {
             where: { profileUserId_subcategoryId: id },
             data: {
                 ...rest,
-                offers: {
-                    deleteMany: {},
-                    createMany: { data: offers }
-                },
                 params: {
                     deleteMany: {},
                     createMany: { data: params }
@@ -159,6 +158,26 @@ export class SpecialtiesService {
     remove(id: SpecialtyId) {
         return this.prismaService.specialty.delete({
             where: { profileUserId_subcategoryId: id }
+        })
+    }
+
+    addOffer(profileUserId: number, subcategoryId: number, createOfferDto: CreateOfferDto) {
+        return this.prismaService.offer.create({
+            data: {
+                ...createOfferDto,
+                Specialty: {
+                    connect: {
+                        profileUserId_subcategoryId: { profileUserId, subcategoryId }
+                    }
+                }
+            }
+        })
+    }
+
+    updateOffer(id: number, updateOfferDto: UpdateOfferDto) {
+        return this.prismaService.offer.update({
+            where: { id },
+            data: updateOfferDto
         })
     }
 }

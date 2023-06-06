@@ -26,8 +26,11 @@ export class Offer implements Prisma.Offer {
     specialtyProfileUserId: number
     specialtySubcategoryId: number
     title: string
+    description: string | null
+    images: string[]
     price: number
     priceUnit: string | null
+    isExample: boolean
 }
 
 export class ParamInSpecialty implements Prisma.ParamInSpecialty {
