@@ -111,7 +111,11 @@ export class ProfilesService {
         return this.prismaService.profileReview.findMany({
             where: { profileUserId },
             include: {
-                user: true,
+                user: {
+                    include: {
+                        profile: { select: { image: true } }
+                    }
+                },
                 specialty: {
                     select: {
                         subcategory: {
