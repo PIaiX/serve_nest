@@ -91,7 +91,7 @@ export class UsersService {
         const { hash } = await this.prismaService.password.findUnique({ where: { userId: id } })
         const isPasswordValid = await this.cryptoService.compare(currentPassword, hash)
         if (!isPasswordValid)
-            throw new UnauthorizedException(AUTH.LOGIN_ERROR_IN.PASSWORD)
+            throw new UnauthorizedException(AUTH.WRONG_OLD_PASSWORD)
 
         const passwordHash = await this.cryptoService.hash(password)
         return this.prismaService.user.update({

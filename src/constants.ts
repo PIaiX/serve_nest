@@ -68,7 +68,8 @@ export const AUTH = {
     MAIL_TITLE: 'Код подтверждения регистрации',
     MAIL_SUCCESS: 'Письмо успешно отправлено',
     CODE_SUCCESS: 'Код принят',
-    PASSWORD_CHANGED: 'Пароль успешно изменен',
     SESSION_EXPIRED: 'Время действия кода истекло, попробуйте еще раз',
+    PASSWORD_CHANGED: 'Пароль успешно изменен',
+    WRONG_OLD_PASSWORD: { ...MESSAGE_400, errors: { ['currentPassword']: 'Неверный пароль' } },
     EMAIL_DOES_NOT_EXIST: { ...MESSAGE_400, errors: { ['email']: 'Пользователь с этим email не зарегистрирован' } }
 }
