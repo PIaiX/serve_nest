@@ -30,14 +30,13 @@ export class MailService {
 
         await this.prismaService.emailData.create({ data: { code, token } })
 
-        let html = htmlMail(code, process.env.BASE_API_URL + 'verify-code?t=' + token)
+        // let html = htmlMail(code, process.env.BASE_API_URL + 'verify-code?t=' + token)
         let text = textMail(code)
         let message = {
             from: process.env.MAIL_FROM,
             to: email,
             subject: AUTH.MAIL_TITLE,
-            text,
-            html
+            text
         }
 
         try {

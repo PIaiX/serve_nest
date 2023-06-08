@@ -16,7 +16,7 @@ export const htmlMail = (code: number, link: string): string => {
 }
 
 export const textMail = (code: number): string => {
-    return `Ваш код подтверждения: ${code}`
+    return `Ваш код подтверждения почты: ${code}`
 }
 
 export class Mail {
@@ -48,5 +48,5 @@ export class Mail {
      * HTML body
      * @example "<b>Hello world?</b>"
      */
-    html: string
+    html?: string
 }
