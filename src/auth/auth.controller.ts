@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Patch, UseGuards, Req, Res, Get, ForbiddenException, UnauthorizedException } from '@nestjs/common'
+import { Controller, Post, Body, Patch, UseGuards, Req, Res, Get, ForbiddenException, UnauthorizedException, BadRequestException } from '@nestjs/common'
 import { AuthService } from './auth.service'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { CreateUserDto, Password } from 'src/users/dto/create-user.dto'
@@ -86,11 +86,12 @@ export class AuthController {
 
     /** Verify email */
     @Post('reset-password/verify')
-    @ApiCreatedResponse({ type: AccessToken })
+    // @ApiCreatedResponse({ type: AccessToken })
     async resetPasswordVerify(@Body() { code }: EmailDataCode, @Req() request: FastifyRequest) {
         if (!request.session) throw new UnauthorizedException(AUTH.SESSION_EXPIRED)
         const { token } = request.session.get('reset-password') as EmailDataToken
         await this.mailService.verifyCode({ code, token })
+        request.session.set('code', { verify: true })
         return { message: AUTH.CODE_SUCCESS }
     }
 
@@ -99,6 +100,8 @@ export class AuthController {
     @ApiOkResponse({ type: User })
     async resetPassword(@Req() request: FastifyRequest, @Body() { password }: Password) {
         if (!request.session) throw new UnauthorizedException(AUTH.SESSION_EXPIRED)
+        const { verify } = request.session.get('code') as { verify: boolean }
+        if (!verify) throw new BadRequestException('Nice try')
         const { email } = request.session.get('reset-password') as Pick<User, 'email'>
         await this.authService.resetPassword(email, password)
         request.session.delete()
