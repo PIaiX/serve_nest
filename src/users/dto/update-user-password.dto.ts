@@ -6,11 +6,7 @@ export class UpdateUserPasswordDto extends Password {
 
     /** Current password */
     @IsStrongPassword({
-        minLength: 8,
-        minLowercase: 1,
-        minUppercase: 1,
-        minNumbers: 1,
-        minSymbols: 1
-    }, { message: ValidationError.PASSWORD })
+        minLength: 1,
+    }, { message: 'Введите текущий пароль' })
     currentPassword: string
 }
