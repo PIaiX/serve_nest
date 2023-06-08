@@ -25,7 +25,8 @@ export enum Exeption {
     NO_FINGERPRINT = 'A fingerprint must be provided',
     UNKOWN_INTERNAL_ERROR = 'Something goes wrong...',
     ERROR_SAVING_TOKEN = 'Token wasnt saved',
-    BAD_REQUEST = 'The request contains a syntax error and cannot be processed',
+    // BAD_REQUEST = 'The request contains a syntax error and cannot be processed',
+    BAD_REQUEST = 'Ошибка в данных запроса',
     EMAIL_REJECTED = 'The email has been rejected by your mail server',
 }
 

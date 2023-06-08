@@ -89,9 +89,10 @@ export class AuthController {
     // @ApiCreatedResponse({ type: AccessToken })
     async resetPasswordVerify(@Body() { code }: EmailDataCode, @Req() request: FastifyRequest) {
         if (!request.session) throw new UnauthorizedException(AUTH.SESSION_EXPIRED)
-        const { token } = request.session.get('reset-password') as EmailDataToken
+        const { email, token } = request.session.get('reset-password') as EmailDataToken & Pick<User, 'email'>
         await this.mailService.verifyCode({ code, token })
-        request.session.set('code', { verify: true })
+        request.session.set('new-password', { email })
+        request.session.options({ path: '/auth', maxAge: 60 * 10 })
         return { message: AUTH.CODE_SUCCESS }
     }
 
@@ -100,9 +101,8 @@ export class AuthController {
     @ApiOkResponse({ type: User })
     async resetPassword(@Req() request: FastifyRequest, @Body() { password }: Password) {
         if (!request.session) throw new UnauthorizedException(AUTH.SESSION_EXPIRED)
-        const { verify } = request.session.get('code') as { verify: boolean }
-        if (!verify) throw new BadRequestException('Nice try')
-        const { email } = request.session.get('reset-password') as Pick<User, 'email'>
+        const { email } = request.session.get('new-password') as Pick<User, 'email'>
+        if (!email) throw new BadRequestException()
         await this.authService.resetPassword(email, password)
         request.session.delete()
         return { message: AUTH.PASSWORD_CHANGED }
