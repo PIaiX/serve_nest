@@ -240,9 +240,9 @@ model ProfileReview {
     rating                 Int
     createdAt              DateTime   @default(now())
     //
-    profile                Profile    @relation(fields: [profileUserId], references: [userId])
-    user                   User       @relation(fields: [userId], references: [id])
-    specialty              Specialty? @relation(fields: [specialtyProfileUserId, specialtySubcategoryId], references: [profileUserId, subcategoryId])
+    profile                Profile    @relation(fields: [profileUserId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
+    user                   User       @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    specialty              Specialty? @relation(fields: [specialtyProfileUserId, specialtySubcategoryId], references: [profileUserId, subcategoryId], onUpdate: Cascade, onDelete: Cascade)
 }
 
 // -- Category --------------------------------------------------------------------
