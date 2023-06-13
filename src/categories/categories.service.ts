@@ -13,14 +13,22 @@ export class CategoriesService {
         })
     }
 
-    findAll() {
+    findAll(city: string) {
         return this.prismaService.category.findMany({
             include: {
                 subcategories: {
                     include: {
                         _count: {
                             select: {
-                                specialties: true
+                                specialties: {
+                                    where: {
+                                        profile: {
+                                            addresses: {
+                                                some: { city: { contains: city } }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     },
