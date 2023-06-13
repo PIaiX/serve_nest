@@ -35,7 +35,7 @@ export class SpecialtiesService {
         }))
     }
 
-    async findAllBySubcategory(params: SpecialtyQueryParams, id: number | undefined) {
+    async findAllBySubcategory(params: SpecialtyQueryParams & { city: string }, id: number | undefined) {
         let take = params.perPage ? +params.perPage : 20
         let page = params.page ? +params.page : 1
         let skip = (page * take) - take
@@ -49,9 +49,19 @@ export class SpecialtiesService {
             where: id !== 0 ? {
                 subcategoryId: id,
                 isVisible: true,
+                profile: {
+                    addresses: {
+                        some: { city: { contains: params.city } }
+                    }
+                }
             } : {
                 isVisible: true,
                 offers: { some: { title: { contains: search, mode } } },
+                profile: {
+                    addresses: {
+                        some: { city: { contains: params.city } }
+                    }
+                }
             }
         }
 

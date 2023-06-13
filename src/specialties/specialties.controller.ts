@@ -9,7 +9,7 @@ export class SpecialtiesController {
     constructor(private readonly specialtiesService: SpecialtiesService) { }
 
     @Get(':subcategoryId')
-    findAll(@Query() params: SpecialtyQueryParams, @Param('subcategoryId') subcategoryId: string) {
+    findAll(@Query() params: SpecialtyQueryParams & { city: string }, @Param('subcategoryId') subcategoryId: string) {
         return this.specialtiesService.findAllBySubcategory(params, +subcategoryId)
     }
 
