@@ -30,10 +30,15 @@ export class OrdersService {
             }
         } : {}
 
+        const subcategory = params.subcatId ? {
+            subcategoryId: +params.subcatId
+        } : {}
+
         const filter = {
             where: {
                 isActive: true,
-                ...userRespondedOrders
+                ...userRespondedOrders,
+                ...subcategory
             }
         }
 
@@ -78,8 +83,26 @@ export class OrdersService {
     }
 
     findOne(id: number) {
-        return this.prismaService.order.findFirst({
-            where: { id }
+        return this.prismaService.order.findUnique({
+            where: { id },
+            include: {
+                subcategory: {
+                    select: {
+                        name: true,
+                        category: { select: { name: true } }
+                    }
+                },
+                city: true,
+                responses: true,
+                user: {
+                    select: {
+                        firstName: true,
+                        profile: {
+                            select: { image: true }
+                        }
+                    }
+                }
+            }
         })
     }
 

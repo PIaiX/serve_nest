@@ -39,6 +39,8 @@ export class OrderQueryParams {
     filter?: string
 
     s?: string
+
+    subcatId?: string
 }
 
 enum Sort {
