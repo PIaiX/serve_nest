@@ -8,6 +8,7 @@ import { CitiesModule } from './cities/cities.module'
 import { ProfilesModule } from './profiles/profiles.module'
 import { SpecialtiesModule } from './specialties/specialties.module'
 import { ChatModule } from './chat/chat.module'
+import { CurrenciesModule } from './currencies/currencies.module'
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { ChatModule } from './chat/chat.module'
     CitiesModule,
     ProfilesModule,
     SpecialtiesModule,
-    ChatModule
+    ChatModule,
+    CurrenciesModule
   ]
 })
 export class AppModule { }

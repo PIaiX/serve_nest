@@ -274,6 +274,7 @@ model Order {
     description    String?
     location       Locations
     cityId         Int?
+    currencyId     Int?
     budget         Int
     budgetType     String
     deadline       DateTime
@@ -286,6 +287,7 @@ model Order {
     subcategory    Subcategory? @relation(fields: [subcategoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     user           User?        @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     city           City?        @relation(fields: [cityId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    Currency       Currency?    @relation(fields: [currencyId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 enum Locations {
@@ -312,5 +314,13 @@ model City {
     id     Int     @id @default(autoincrement())
     en     String?
     ru     String?
+    orders Order[]
+}
+
+// -- Currency --------------------------------------------------------------------
+model Currency {
+    id     Int     @id @default(autoincrement())
+    name   String?
+    symbol String?
     orders Order[]
 }

@@ -8,6 +8,7 @@ export class Order implements Prisma.Order {
     description: string | null
     location: Locations
     cityId: number | null
+    currencyId: number | null
     budget: number
     budgetType: string
     deadline: Date
