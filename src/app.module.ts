@@ -7,6 +7,7 @@ import { SubcategoriesModule } from './subcategories/subcategories.module'
 import { CitiesModule } from './cities/cities.module'
 import { ProfilesModule } from './profiles/profiles.module'
 import { SpecialtiesModule } from './specialties/specialties.module'
+import { ChatModule } from './chat/chat.module'
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { SpecialtiesModule } from './specialties/specialties.module'
     SubcategoriesModule,
     CitiesModule,
     ProfilesModule,
-    SpecialtiesModule
+    SpecialtiesModule,
+    ChatModule
   ]
 })
 export class AppModule { }
