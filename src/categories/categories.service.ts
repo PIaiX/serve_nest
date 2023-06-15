@@ -26,7 +26,8 @@ export class CategoriesService {
                                             addresses: {
                                                 some: { city: { contains: city } }
                                             }
-                                        }
+                                        },
+                                        isVisible: true
                                     }
                                 }
                             }
