@@ -3,6 +3,7 @@ import { CreateOrderDto } from './dto/create-order.dto'
 import { UpdateOrderDto } from './dto/update-order.dto'
 import { PrismaService } from 'src/_common/prisma/prisma.service'
 import { OrderQueryParams } from './entities/order.entity'
+import { CreateOrderResponseDto } from './dto/create-order-response.dto'
 
 @Injectable()
 export class OrdersService {
@@ -50,7 +51,7 @@ export class OrdersService {
                     subcategory: {
                         select: {
                             name: true,
-                            category: { select: { name: true } }
+                            category: { select: { id: true, name: true } }
                         }
                     },
                     city: true,
@@ -89,7 +90,7 @@ export class OrdersService {
                 subcategory: {
                     select: {
                         name: true,
-                        category: { select: { name: true } }
+                        category: { select: { id: true, name: true } }
                     }
                 },
                 city: true,
@@ -113,17 +114,18 @@ export class OrdersService {
         })
     }
 
-    remove(id: number) {
-        return this.prismaService.order.delete({
-            where: { id }
+    remove(id: number, userId: number) {
+        return this.prismaService.order.deleteMany({
+            where: { id, userId }
         })
     }
 
-    respond(orderId: number, userId: number) {
+    respond(orderId: number, userId: number, createOrderResponseDto?: CreateOrderResponseDto) {
         return this.prismaService.response.create({
             data: {
                 userId,
-                orderId
+                orderId,
+                ...createOrderResponseDto
             }
         })
     }

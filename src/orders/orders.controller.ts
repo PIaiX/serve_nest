@@ -1,10 +1,11 @@
 import { FastifyRequest } from 'fastify'
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Req } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UseGuards, Req, ForbiddenException } from '@nestjs/common'
 import { OrdersService } from './orders.service'
 import { CreateOrderDto } from './dto/create-order.dto'
 import { UpdateOrderDto } from './dto/update-order.dto'
 import { OrderQueryParams } from './entities/order.entity'
 import { AuthGuard } from 'src/_common/guards/auth.guard'
+import { CreateOrderResponseDto } from './dto/create-order-response.dto'
 
 @Controller('orders')
 @UseGuards(AuthGuard)
@@ -27,18 +28,19 @@ export class OrdersController {
     }
 
     @Patch(':id')
-    update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
+    update(@Req() request: FastifyRequest, @Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
+        if (+request.headers.userId !== updateOrderDto.userId) throw new ForbiddenException()
         return this.ordersService.update(+id, updateOrderDto);
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.ordersService.remove(+id);
+    remove(@Req() request: FastifyRequest, @Param('id') id: string) {
+        return this.ordersService.remove(+id, +request.headers.userId);
     }
 
     @Post(':id/response')
-    respond(@Req() request: FastifyRequest, @Param('id') id: string) {
-        return this.ordersService.respond(+id, +request.headers.userId);
+    respond(@Req() request: FastifyRequest, @Param('id') id: string, @Body() createOrderResponseDto: CreateOrderResponseDto) {
+        return this.ordersService.respond(+id, +request.headers.userId, createOrderResponseDto);
     }
 
     @Delete(':id/response')

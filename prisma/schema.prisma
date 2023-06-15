@@ -1,6 +1,6 @@
 generator client {
     provider        = "prisma-client-js"
-    previewFeatures = ["filteredRelationCount"]
+    previewFeatures = ["filteredRelationCount", "orderByNulls"]
 }
 
 datasource db {
@@ -295,10 +295,14 @@ enum Locations {
 }
 
 model Response {
-    user    User  @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    userId  Int
-    order   Order @relation(fields: [orderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    orderId Int
+    user        User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    userId      Int
+    order       Order    @relation(fields: [orderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    orderId     Int
+    description String?
+    price       Int?
+    priceUnit   String?
+    files       String[]
 
     @@id([userId, orderId])
 }

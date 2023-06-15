@@ -23,6 +23,15 @@ export enum Locations {
     REMOTE = 'REMOTE'
 }
 
+export class OrderResponse implements Prisma.Response {
+    userId: number
+    orderId: number
+    description: string | null
+    price: number | null
+    priceUnit: string | null
+    files: string[]
+}
+
 export class OrderQueryParams {
     /* Page */
     page: number = 1
