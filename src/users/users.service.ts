@@ -115,7 +115,7 @@ export class UsersService {
                 subcategory: {
                     select: {
                         name: true,
-                        category: { select: { name: true } }
+                        category: { select: { id: true, name: true } }
                     }
                 },
                 city: true,
