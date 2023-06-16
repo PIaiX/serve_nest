@@ -115,7 +115,6 @@ model Profile {
     // Specialties
     specialties Specialty[]
     userReviews ProfileReview[]
-    examples    Example[]
     //
     user        User            @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
@@ -171,17 +170,6 @@ model Specialty {
     @@unique([profileUserId, subcategoryId])
 }
 
-model Example {
-    id            Int     @id @default(autoincrement())
-    profileUserId Int
-    image         String?
-    title         String?
-    description   String?
-    price         Int?
-    //
-    Profile       Profile @relation(fields: [profileUserId], references: [userId], onUpdate: Cascade, onDelete: Cascade)
-}
-
 model Offer {
     id                     Int        @id @default(autoincrement())
     specialtyProfileUserId Int
@@ -191,9 +179,11 @@ model Offer {
     images                 String[]
     price                  Int
     priceUnit              String?
+    currencyId             Int?
     isExample              Boolean    @default(false)
     //
-    Specialty              Specialty? @relation(fields: [specialtyProfileUserId, specialtySubcategoryId], references: [profileUserId, subcategoryId], onUpdate: Cascade, onDelete: Cascade)
+    specialty              Specialty? @relation(fields: [specialtyProfileUserId, specialtySubcategoryId], references: [profileUserId, subcategoryId], onUpdate: Cascade, onDelete: Cascade)
+    currency               Currency?  @relation(fields: [currencyId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 model SpecialtyParams {
@@ -287,7 +277,7 @@ model Order {
     subcategory    Subcategory? @relation(fields: [subcategoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     user           User?        @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     city           City?        @relation(fields: [cityId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-    Currency       Currency?    @relation(fields: [currencyId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    currency       Currency?    @relation(fields: [currencyId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
 
 enum Locations {
@@ -323,4 +313,5 @@ model Currency {
     name   String?
     symbol String?
     orders Order[]
+    offers Offer[]
 }
