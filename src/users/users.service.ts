@@ -119,8 +119,10 @@ export class UsersService {
                     }
                 },
                 city: true,
-                responses: true
-            }
+                responses: true,
+                currency: true
+            },
+            orderBy: { createdAt: 'desc' }
         })
     }
 }

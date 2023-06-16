@@ -56,6 +56,7 @@ export class OrdersService {
                     },
                     city: true,
                     responses: true,
+                    currency: true,
                     user: {
                         select: {
                             firstName: true,
@@ -95,6 +96,7 @@ export class OrdersService {
                 },
                 city: true,
                 responses: true,
+                currency: true,
                 user: {
                     select: {
                         firstName: true,
