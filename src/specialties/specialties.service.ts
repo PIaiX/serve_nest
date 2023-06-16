@@ -71,7 +71,12 @@ export class SpecialtiesService {
                 ...filter,
                 distinct: ['profileUserId'],
                 include: {
-                    offers: true,
+                    offers: {
+                        include: {
+                            currency: true
+                        },
+                        orderBy: { id: 'desc' }
+                    },
                     profile: {
                         include: {
                             user: {
@@ -131,9 +136,12 @@ export class SpecialtiesService {
                     include: {
                         specialties: {
                             include: {
-                                offers: true,
+                                offers: {
+                                    include: { currency: true },
+                                    orderBy: { id: 'desc' }
+                                },
                                 params: { select: { specialtyParamsOptionId: true } },
-                                subcategory: true
+                                subcategory: true,
                             }
                         },
                         specialtyParams: {
@@ -172,12 +180,18 @@ export class SpecialtiesService {
     }
 
     addOffer(profileUserId: number, subcategoryId: number, createOfferDto: CreateOfferDto) {
+        const { currencyId, ...rest } = createOfferDto
         return this.prismaService.offer.create({
             data: {
-                ...createOfferDto,
-                Specialty: {
+                ...rest,
+                specialty: {
                     connect: {
                         profileUserId_subcategoryId: { profileUserId, subcategoryId }
+                    }
+                },
+                currency: {
+                    connect: {
+                        id: currencyId
                     }
                 }
             }

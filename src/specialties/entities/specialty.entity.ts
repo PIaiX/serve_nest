@@ -30,6 +30,7 @@ export class Offer implements Prisma.Offer {
     images: string[]
     price: number
     priceUnit: string | null
+    currencyId: number | null
     isExample: boolean
 }
 

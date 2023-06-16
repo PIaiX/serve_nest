@@ -18,7 +18,9 @@ export class ProfilesService {
                 addresses: true,
                 specialties: {
                     include: {
-                        offers: true,
+                        offers: {
+                            include: { currency: true }
+                        },
                         subcategory: {
                             select: {
                                 name: true,
