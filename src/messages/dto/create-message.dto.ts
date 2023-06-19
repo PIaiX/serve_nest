@@ -3,4 +3,4 @@ import { Message } from "../entities/message.entity"
 
 // --------------------------------------------------------------------------------
 
-export class CreateMessageDto extends OmitType(Message, ['id', 'createdAt'] as const) { }
+export class CreateMessageDto extends OmitType(Message, ['id', 'createdAt', 'chatId'] as const) { }

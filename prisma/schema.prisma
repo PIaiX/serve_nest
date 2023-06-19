@@ -51,6 +51,8 @@ model User {
     // 
     profilesReviews            ProfileReview[]
     // Chat
+    chatUserOne                Chat[]          @relation("chatUserOne")
+    chatUserTwo                Chat[]          @relation("chatUserTwo")
     sendMessages               ChatMessages[]  @relation("sender")
     receivedMessages           ChatMessages[]  @relation("recipient")
     // Meta
@@ -320,8 +322,21 @@ model Currency {
 }
 
 // -- Chat ------------------------------------------------------------------------
+model Chat {
+    id        Int            @id @default(autoincrement())
+    userOneId Int
+    userTwoId Int
+    messages  ChatMessages[]
+    //
+    userOne   User           @relation("chatUserOne", fields: [userOneId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    userTwo   User           @relation("chatUserTwo", fields: [userTwoId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+
+    @@unique([userOneId, userTwoId])
+}
+
 model ChatMessages {
     id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    chatId      Int
     senderId    Int
     recipientId Int
     text        String
@@ -330,4 +345,5 @@ model ChatMessages {
     //
     sender      User     @relation("sender", fields: [senderId], references: [id], onUpdate: Cascade, onDelete: Cascade)
     recipient   User     @relation("recipient", fields: [recipientId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+    chat        Chat     @relation(fields: [chatId], references: [id], onUpdate: Cascade, onDelete: Cascade)
 }
