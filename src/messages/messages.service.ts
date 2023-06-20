@@ -24,6 +24,10 @@ export class MessagesService {
                         create: { userOneId, userTwoId }
                     }
                 }
+            },
+            include: {
+                sender: this.getName,
+                recipient: this.getName
             }
 
         })
@@ -48,13 +52,6 @@ export class MessagesService {
     }
 
     findAllChats(userId: number) {
-        const getName = {
-            select: {
-                id: true,
-                firstName: true,
-                avatar: true
-            }
-        }
         return this.prismaService.chat.findMany({
             where: {
                 OR: [
@@ -63,14 +60,43 @@ export class MessagesService {
                 ]
             },
             include: {
-                userOne: getName,
-                userTwo: getName,
+                userOne: this.getName,
+                userTwo: this.getName,
                 messages: {
                     take: 1,
                     orderBy: { createdAt: 'desc' },
-                    include: { sender: getName }
+                    include: { sender: this.getName }
                 }
             }
         })
+    }
+
+    async findOneChat(userId: number, id: number) {
+        const chat = await this.prismaService.chat.findUnique({
+            where: { id },
+            include: {
+                userOne: this.getName,
+                userTwo: this.getName,
+                messages: {
+                    orderBy: { createdAt: 'desc' },
+                    include: {
+                        sender: this.getName,
+                        recipient: this.getName
+                    }
+                }
+            }
+        })
+        if (chat.userOneId === userId || chat.userTwoId === userId)
+            return chat.messages
+
+        return null
+    }
+
+    private getName = {
+        select: {
+            id: true,
+            firstName: true,
+            avatar: true
+        }
     }
 }

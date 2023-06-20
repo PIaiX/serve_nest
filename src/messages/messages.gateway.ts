@@ -30,22 +30,31 @@ export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect
             return client.disconnect()
         }
         client.join(`${userId}`)
-        console.log('\x1b[32m%s\x1b[0m', `[WS server]  -`, `User ${userId} connected`)
+        console.log('\x1b[32m%s\x1b[0m', `[WS server]   -`, `User ${userId} connected`)
         client.emit('connection', 'Successfully connected to server')
     }
 
     async handleDisconnect(client: Socket) {
         const userId = await this.getUserIdFromToken(client)
-        console.log('\x1b[32m%s\x1b[0m', `[WS server]  -`, `User ${userId ?? 'unauthorised and'} disconnected`)
+        console.log('\x1b[32m%s\x1b[0m', `[WS server]   -`, `User ${userId ?? 'unauthorised and'} disconnected`)
     }
 
-    @SubscribeMessage('chats')
-    findAllChats(client: Socket, createChatDto: CreateMessageDto) {
+
+    // Chats
+    @SubscribeMessage('findAllChats')
+    findAllChats(client: Socket) {
         const userId = this.getUser(client)
         return this.messagesService.findAllChats(userId)
     }
 
-    @SubscribeMessage('message:create')
+    @SubscribeMessage('findOneChat')
+    findOneChat(client: Socket, { chatId }: { chatId: number }) {
+        const userId = this.getUser(client)
+        return this.messagesService.findOneChat(userId, chatId)
+    }
+
+    // Messages
+    @SubscribeMessage('sendMessage')
     async create(client: Socket, createChatDto: CreateMessageDto) {
         const { recipientId } = createChatDto
         const senderId = this.getUser(client)
@@ -53,35 +62,29 @@ export class MessagesGateway implements OnGatewayConnection, OnGatewayDisconnect
         const recipientChats = await this.messagesService.findAllChats(recipientId)
         client.to(`${recipientId}`).emit('chats', recipientChats)
 
-        return this.messagesService.create({ ...createChatDto, senderId })
+        const newMessage = await this.messagesService.create({ ...createChatDto, senderId })
+        client.to(`${recipientId}`).emit('findOneChat', newMessage)
+        client.emit('sendMessage', newMessage)
+        return newMessage
     }
 
-    @SubscribeMessage('message:get')
-    findAll(client: Socket) {
-        const senderId = this.getUser(client)
-        return this.messagesService.findAll(senderId)
-    }
-
-    @SubscribeMessage('message:find')
-    findOne(client: Socket, id: number) {
-        const senderId = this.getUser(client)
-        return this.messagesService.findOne(id)
-    }
-
-    @SubscribeMessage('message:update')
+    @SubscribeMessage('updateMessage')
     update(client: Socket, updateMessageDto: UpdateMessageDto) {
         const senderId = this.getUser(client)
         return this.messagesService.update(updateMessageDto.id, updateMessageDto)
     }
 
-    @SubscribeMessage('message:remove')
+    @SubscribeMessage('removeMessage')
     remove(client: Socket, id: number) {
         const senderId = this.getUser(client)
         return this.messagesService.remove(id)
     }
 
+
+    // Utils
     private getUser(client: Socket) {
-        // if (!client.handshake.headers.userId) throw new WsException(Exeption.NOT_AUTHORIZED)
+        if (!client.handshake.headers.userId)
+            client.emit('connection', Exeption.NOT_AUTHORIZED)
         return +client.handshake.headers.userId
     }
 
